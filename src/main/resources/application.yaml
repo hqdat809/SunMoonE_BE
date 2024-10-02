@@ -1,0 +1,36 @@
+server:
+  application:
+    name: ChamSocDinhDuong
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sunmoone.vn@gmail.com
+    password: wret cdeu dtpo etdm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/chamsocdinhduong
+    password: 0392338494
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
+  security:
+    user:
+      name: user
+      password: userpassword
