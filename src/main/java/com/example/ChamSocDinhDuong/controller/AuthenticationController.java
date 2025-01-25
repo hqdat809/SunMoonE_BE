@@ -1,8 +1,8 @@
 package com.example.ChamSocDinhDuong.controller;
 
+import com.example.ChamSocDinhDuong.DTO.UserDTO;
 import com.example.ChamSocDinhDuong.auth.AuthenticationRequest;
 import com.example.ChamSocDinhDuong.auth.AuthenticationResponse;
-import com.example.ChamSocDinhDuong.auth.ResisterRequest;
 import com.example.ChamSocDinhDuong.model.User;
 import com.example.ChamSocDinhDuong.repository.UserRepository;
 import com.example.ChamSocDinhDuong.service.AuthenticationService;
@@ -12,11 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import jakarta.validation.Valid;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
-@RestController 
+@RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
@@ -24,11 +24,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final EmailService emailService;
     private final UserRepository userRepository;
+
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody ResisterRequest request
+            @Valid @RequestBody UserDTO userDTO
     ) {
-        return ResponseEntity.ok(authenticationService.register(request));
+        return ResponseEntity.ok(authenticationService.register(userDTO));
     }
 
     @PostMapping("/authenticate")
@@ -44,10 +45,11 @@ public class AuthenticationController {
 
     ) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found with email: "+ userEmail)
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found with email: " + userEmail)
         );
-        emailService.sendSimpleEmail(userEmail, "Xác thực email SunMoonE.vn", "Mã xác thực email của bạn là: " + user.getVerifyCode());
-        return ResponseEntity.ok("Đã gửi mã xác thực qua email "+userEmail+" thành công!!");
+        emailService.sendSimpleEmail(user.getEmail(), "Xác thực email SunMoonE.vn", "Mã xác thực email của bạn là: " + user.getVerifyCode());
+
+        return ResponseEntity.ok("Đã gửi mã xác thực qua email " + userEmail + " thành công!!");
     }
 
     @GetMapping("/verify-email")
@@ -57,7 +59,7 @@ public class AuthenticationController {
 
     ) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng với email: "+ userEmail)
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng với email: " + userEmail)
         );
 
         if (user.getVerifyCode() == Integer.parseInt(otp)) {
@@ -69,6 +71,7 @@ public class AuthenticationController {
         return new ResponseEntity<>("Mã xác thực không đúng, hãy nhập lại!!!", HttpStatus.BAD_REQUEST);
     }
 
+
     @GetMapping("/verify-phone-number")
     public ResponseEntity<String> verifyPhoneNumber(
             @RequestParam(value = "email", defaultValue = "", required = false) String userEmail,
@@ -76,10 +79,10 @@ public class AuthenticationController {
 
     ) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found with email: "+ userEmail)
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found with email: " + userEmail)
         );
 
-        Optional<User> userByPhone = userRepository.findByPhoneNumber(phoneNumber);
+        Optional<User> userByPhone = userRepository.findByPhone(phoneNumber);
 
         if (!user.isVerified()) {
             return new ResponseEntity<>(
@@ -95,7 +98,7 @@ public class AuthenticationController {
             );
         }
 
-        user.setPhoneNumber(phoneNumber);
+        user.setPhone(phoneNumber);
         userRepository.save(user);
         return ResponseEntity.ok("Đã xác thực thiết lập số điện thoại thành công!!");
     }

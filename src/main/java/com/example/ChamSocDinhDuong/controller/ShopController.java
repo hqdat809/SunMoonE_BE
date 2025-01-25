@@ -40,6 +40,4 @@ public class ShopController {
 
         return ResponseEntity.ok(shopRepository.save(shopUpdate));
     }
-
-
 }
