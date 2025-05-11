@@ -20,9 +20,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    url: mysql://root:miVLNNNrRELAqEYDkBWRFvcogVLpENLr@mysql.railway.internal:3306/railway
+    url: jdbc:mysql://roundhouse.proxy.rlwy.net:18906/railway
     #    url: jdbc:mysql://localhost:3306/chamsocdinhduong
-    password: miVLNNNrRELAqEYDkBWRFvcogVLpENLr
+    password: E3aFGd5e5fd-eHEfaC-EaD4b2be36bFF
   jpa:
     hibernate:
       ddl-auto: update
